@@ -5,7 +5,19 @@ import { Link } from 'react-router-dom';
 import OAuth from '../Components/OAuth';
 
 export default function SignIn() {
+  const [inputs, setInputs] = useState({
+    email: "",
+    password: ""
+  });
+  const {email, password} = inputs;
   const [showPassword, setShowPassword] = useState(false);
+
+  //onchange set input data
+  const onChange = (e) => {
+    setInputs((previousState) => ({
+      ...previousState, [e.target.id]: e.target.value
+    }))
+  }
   return (
     <section>
       <h1 className='uppercase text-center text-3xl mt-6 font-bold underline'>Sign In</h1>
@@ -15,12 +27,12 @@ export default function SignIn() {
         </div>
         <div className='w-full md:w-[67%] lg:w-[40%] lg:ml-20'>
           <form>
-            <input type="text" name="email" id="email" placeholder='Email Address' className='w-full px-4 py-2 text-xl text-gray-700 bg-white border-gray-300 rounded transition ease-in-out mb-6'/>
+            <input type="email" name="email" id="email" value={email} placeholder='Email Address' className='w-full px-4 py-2 text-xl text-gray-700 bg-white border-gray-300 rounded transition ease-in-out mb-6' onChange={onChange}/>
             <div className='relative'>
               {/* ONCLICK EYE CHANGE PASSWORD TO TEXT */}
-              <input type={showPassword ? 'text' : 'password'} name="password" id="password" placeholder='Password' className='w-full px-4 py-2 text-xl text-gray-700 bg-white border-gray-300 rounded transition ease-in-out mb-6'/>
+              <input type={showPassword ? 'text' : 'password'} name="password" id="password" placeholder='Password' value={password} className='w-full px-4 py-2 text-xl text-gray-700 bg-white border-gray-300 rounded transition ease-in-out mb-6' onChange={onChange}/>
               {/* PASSWORD EYE */}
-              {showPassword ? <AiFillEyeInvisible className='absolute right-3 top-3 text-xl cursor-pointer' onClick={() => setShowPassword(false)} /> : <AiFillEye className='absolute right-3 top-3 text-xl cursor-pointer' onClick={() => setShowPassword(true)} />}
+              {showPassword ? <AiFillEye className='absolute right-3 top-3 text-xl cursor-pointer' onClick={() => setShowPassword(false)} /> : <AiFillEyeInvisible className='absolute right-3 top-3 text-xl cursor-pointer' onClick={() => setShowPassword(true)} />}
             </div>
             {/* BUTTONS */}
             <div className='flex justify-between whitespace-nowrap text-sm sm:text-lg'>
