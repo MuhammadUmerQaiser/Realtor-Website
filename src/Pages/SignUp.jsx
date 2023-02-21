@@ -1,8 +1,12 @@
 import React, { useState } from 'react'
 import AuthenticationImage from '../Components/AuthenticationImage'
 import {AiFillEye, AiFillEyeInvisible} from 'react-icons/ai';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import OAuth from '../Components/OAuth';
+import { createUserWithEmailAndPassword, getAuth, updateProfile } from "firebase/auth";
+import {db} from "../Firebase";
+import { toast } from 'react-toastify';
+import { doc, serverTimestamp, setDoc } from 'firebase/firestore';
 
 export default function SignUp() {
   const [inputs, setInputs] = useState({
@@ -12,12 +16,44 @@ export default function SignUp() {
   });
   const {name, email, password} = inputs;
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
   //onchange set input data
   const onChange = (e) => {
     setInputs((previousState) => ({
       ...previousState, [e.target.id]: e.target.value
     }))
+  }
+
+  //On submit form store data
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    try{
+      //CREATE THE USER ON AUTHENTICATION
+      const auth = getAuth();
+      const userCredentials = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const user = userCredentials.user;
+
+      // ADD NAME FIELD
+      updateProfile(auth.currentUser, {
+        displayName: name
+      })
+
+      // DELETE THE PASSWORD BCS WE WONT STORE PASSWORD IN OUR COLLECTION
+      const inputsCopy = {...inputs}; //ADD ALL FIELD IN INPUTSCOPY
+      delete inputsCopy.password; // DELETE PASSWORD
+      inputsCopy.timemstamp = serverTimestamp() //ADD TIMESTAMP
+
+      await setDoc(doc(db, "users", user.uid), inputsCopy); //call setdoc method to store data on firestore database. doc takes three argumenst ... 1) dabatabase (db), 2)Collection  Name, 3)User Id and after that we gives our input so it can store in database with collection "Users"
+      toast.success(name + " has been registered successfully");
+      navigate("/")
+    }catch(error){
+      toast.error("Something went wrong with registration")
+    }
   }
   return (
     <section>
@@ -27,7 +63,7 @@ export default function SignUp() {
           <AuthenticationImage />
         </div>
         <div className='w-full md:w-[67%] lg:w-[40%] lg:ml-20'>
-          <form>
+          <form onSubmit={onSubmit}>
             <input type="text" name="name" id="name" value={name} placeholder='Full Name' className='w-full px-4 py-2 text-xl text-gray-700 bg-white border-gray-300 rounded transition ease-in-out mb-6' onChange={onChange}/>
             <input type="email" name="email" id="email" value={email} placeholder='Email Address' className='w-full px-4 py-2 text-xl text-gray-700 bg-white border-gray-300 rounded transition ease-in-out mb-6' onChange={onChange}/>
             <div className='relative'>
@@ -52,8 +88,8 @@ export default function SignUp() {
               <p className='uppercase text-center mx-4 font-semibold'>OR</p>
             </div>
             {/* GOOGLE SIGN IN BUTTON */}
-            <OAuth />
           </form>
+          <OAuth />
           
         </div>
       </div>

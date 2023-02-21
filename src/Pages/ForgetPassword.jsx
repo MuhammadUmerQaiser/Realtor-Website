@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
 import AuthenticationImage from '../Components/AuthenticationImage'
-import {AiFillEye, AiFillEyeInvisible} from 'react-icons/ai';
 import { Link } from 'react-router-dom';
 import OAuth from '../Components/OAuth';
+import { toast } from 'react-toastify';
+import { getAuth, sendPasswordResetEmail } from 'firebase/auth';
 
 export default function ForgetPassword() {
   const [email, setEmail] = useState("")
@@ -10,6 +11,17 @@ export default function ForgetPassword() {
   //onchange set input data
   const onChange = (e) => {
     setEmail(e.target.value)
+  }
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const auth = getAuth();
+      await sendPasswordResetEmail(auth, email);
+      toast.success("Email has been sent to " + email);
+    } catch (error) {
+      toast.error("Email is not registered");
+    }
   }
   return (
     <section>
@@ -19,7 +31,7 @@ export default function ForgetPassword() {
           <AuthenticationImage />
         </div>
         <div className='w-full md:w-[67%] lg:w-[40%] lg:ml-20'>
-          <form>
+          <form onSubmit={onSubmit}>
             <input type="email" name="email" id="email" value={email} placeholder='Email Address' className='w-full px-4 py-2 text-xl text-gray-700 bg-white border-gray-300 rounded transition ease-in-out mb-6' onChange={onChange}/>
             {/* BUTTONS */}
             <div className='flex justify-between whitespace-nowrap text-sm sm:text-lg'>
