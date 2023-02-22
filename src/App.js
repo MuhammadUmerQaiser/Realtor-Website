@@ -8,7 +8,8 @@ import Profile from "./Pages/Profile";
 import Header from "./Components/Header";
 import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
-import PrivateRoute from "./Components/PrivateRoute";
+import PrivateRouteForProfile from "./Components/PrivateRouteForProfile";
+import PrivateRouteForSignIn from "./Components/PrivateRouteForSignIn";
 
 function App() {
   return (
@@ -18,11 +19,14 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/offers" element={<Offers />} />
-          <Route path="/sign-in" element={<SignIn />} />
+          {/* IT WILL TAKE THE PRIVATE ROUTE ON HITTING SIGN IN URL BUT AT PRIVATE ROUTE IT WILL CHECK LOGGED IN CONDITION IF IT IS FALSE IT WILL RENDER OUTLET WHICH MEANS SIGN IN COMPONENT BCS IT IS TAKING PROFILE COMPONENT */}
+          <Route path="/sign-in" element={<PrivateRouteForSignIn />}>
+            <Route path="/sign-in" element={<SignIn />} />
+          </Route>
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/forget-password" element={<ForgetPassword />} />
           {/* IT WILL TAKE THE PRIVATE ROUTE ON HITTING PROFILE URL BUT AT PRIVATE ROUTE IT WILL CHECK LOGGED IN CONDITION IF IT IS TRUE IT WILL RENDER OUTLET WHICH MEANS PROFILE COMPONENT BCS IT IS TAKING PROFILE COMPONENT */}
-          <Route path="/profile" element={<PrivateRoute />}>
+          <Route path="/profile" element={<PrivateRouteForProfile />}>
             <Route path="/profile" element={<Profile />} />
           </Route>
         </Routes>
