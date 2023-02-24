@@ -4,6 +4,8 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router';
 import { toast } from 'react-toastify';
 import { db } from '../Firebase';
+import {HiHome} from 'react-icons/hi';
+import { Link } from 'react-router-dom';
 
 export default function Profile() {
   const auth = getAuth();
@@ -74,6 +76,12 @@ export default function Profile() {
             <p onClick={loggedOut} className='text-blue-600 hover:blue-red-800 transition duration-200 ease-in-out cursor-pointer'>Sign Out</p>
           </div>
         </form>
+        <button type='submit' className='mt-6 w-full bg-blue-600 text-white uppercase px-7 py-3 font-medium text-sm rounded shadow-md hover:bg-blue-700 active:bg-blue-800 hover:shadow-lg transition duration-150 ease-in-out'>
+          <Link to="/create-listing" className='flex items-center justify-center'>
+            <HiHome className='mr-2 text-3xl rounded-full bg-red-200 p-1 border-2' />
+              Sell or rent your home
+          </Link>
+        </button>
       </div>
     </section>
     </>
