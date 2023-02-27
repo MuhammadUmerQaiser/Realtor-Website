@@ -151,7 +151,7 @@ export default function CreateListing() {
 
         console.log( formDataCopy);
         const docRef = await addDoc(collection(db, "listings"), formDataCopy);
-        setLoading(false);
+        setLoading(false);      
         toast.success("Listing is created");
         navigate(`/category/${formDataCopy.type}/${docRef.id}`);
     }

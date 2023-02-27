@@ -1,15 +1,20 @@
 import { getAuth, updateProfile } from 'firebase/auth';
-import { doc, updateDoc } from 'firebase/firestore';
-import React, { useState } from 'react'
+import { collection, deleteDoc, doc, getDocs, orderBy, query, updateDoc, where } from 'firebase/firestore';
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router';
 import { toast } from 'react-toastify';
 import { db } from '../Firebase';
 import {HiHome} from 'react-icons/hi';
 import { Link } from 'react-router-dom';
+import ListingItem from '../Components/ListingItem';
 
 export default function Profile() {
   const auth = getAuth();
   const navigate = useNavigate();
+  //users listing
+  const [userListing, setUserListing] = useState("");
+  //loading effect
+  const [loading, setLoading] = useState(true);
   // GET DATA OF LOGGED IN USER
   const [inputs, setInputs] = useState({
     name: auth.currentUser.displayName,
@@ -52,6 +57,49 @@ export default function Profile() {
     auth.signOut();
     navigate("/sign-in");
   }
+
+  // SHOW USERS LISTING USINH USE EFFECT
+  useEffect(() => {
+    const fetchUserListings = async () => {
+      const listingRef = collection(db, "listings");
+      const dataQuery = query(listingRef, where("userRef", "==", auth.currentUser.uid), orderBy("timestamp", "desc")); //query through which data filters
+      const docSnap = await getDocs(dataQuery); //get all the data according to query
+      let listings = [];
+      docSnap.forEach((doc) => {    
+        return listings.push({
+          id: doc.id,
+          data: doc.data()
+        });
+      });
+      setUserListing(listings);
+      console.log(listings)
+      setLoading(false);
+    }
+    fetchUserListings();
+    console.log(userListing);
+  }, [auth.currentUser.uid]);
+  
+  // ON DELETE FUNCTION
+  const onDelete = async (listingId) => {
+    if(window.confirm("Are you sure you want to delete?")){
+      // this will delete the listing from collection
+      await deleteDoc(doc(db, "listings", listingId));
+      // now update the listing from userListing constant so it can update the page
+      const updateListings = userListing.filter(
+        (listing) => listing.id !== listingId //check listing which is not available in object
+      );
+      setUserListing(updateListings); //update the userListing
+      toast.success("Successfully deleted the listing");
+    }else{
+      toast.error("Cannot delete the listing");
+    }
+  }
+
+  // ON EDIT FUNCTION
+  const onEdit = (listingId) => {
+    navigate(`/edit-listing/${listingId}`);
+  }
+
   return (
     <>
     <section className='max-w-6xl mx-auto flex justify-center items-center flex-col'>
@@ -84,6 +132,27 @@ export default function Profile() {
         </button>
       </div>
     </section>
+    <div className='max-w-6xl px-3 mt-6 mx-auto'>
+      {/* {userListing} */}
+      {
+        //if loading is false and if there is listing then show the listing to users
+        !loading && userListing.length > 0 && (
+          <>
+            <h2 className='font-semibold text-center text-2xl'>My Listings</h2>
+            <ul className='sm:grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl-grid-cols-5 mt-6 mb-6'>
+              {
+                userListing.map((listing) => {
+                  return (
+                    <ListingItem key={listing.id} listing={listing.data} id={listing.id} 
+                    onDelete={() => onDelete(listing.id)} onEdit={() => onEdit(listing.id)} />
+                  )
+                })
+              }
+            </ul>
+          </>
+        )
+      }
+    </div>
     </>
   )
 }
