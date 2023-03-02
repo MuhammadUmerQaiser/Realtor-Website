@@ -183,6 +183,7 @@ export default function EditListing() {
       [...images].map((image) => storeImage(image)) //[...images] IT SPREAD THE IMAGE AND MAP THE IMAGES ONE BY ONE TO STOREIMAGE FUNCTION
     ).catch((error) => {
       setLoading(false);
+      console.log(error);
       toast.error("Image is not uploaded");
       return;
     });
