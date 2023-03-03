@@ -101,7 +101,7 @@ export default function Listing() {
                   .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
               : listing.regularPrices
                   .toString()
-                  .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}{" "}
+                  .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
             {listing.type === "rent" ? "/month" : ""}
           </p>
           {/* address */}
