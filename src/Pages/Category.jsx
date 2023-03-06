@@ -11,20 +11,21 @@ import {
   startAfter,
   where,
 } from "firebase/firestore";
-import { Link } from "react-router-dom";
 import ListingItem from "../Components/ListingItem";
+import { useParams } from "react-router";
 
-export default function Offers() {
+export default function Category() {
   const [listings, setListing] = useState(null);
   const [lastFetchedListings, setLastFetchedListing] = useState(null); //get the last listing which is loaded on the page
   const [loading, setLoading] = useState(true);
+  const params = useParams();
   useEffect(() => {
     const fetchListing = async () => {
       try {
         const listingRef = collection(db, "listings");
         const q = query(
           listingRef,
-          where("offer", "==", true),
+          where("type", "==", params.categoryName),
           orderBy("timestamp", "desc"),
           limit(8)
         );
@@ -53,7 +54,7 @@ export default function Offers() {
       const listingRef = collection(db, "listings");
       const q = query(
         listingRef,
-        where("offer", "==", true),
+        where("type", "==", params.categoryName),
         orderBy("timestamp", "desc"),
         startAfter(lastFetchedListings), //this will tell the last listing so data will start fetching after this
         limit(4)
@@ -83,7 +84,7 @@ export default function Offers() {
   return (
     <div className="max-w-6xl mx-auto pt-4 sapce-y-6">
       <h1 className="uppercase text-center text-3xl mt-6 font-bold underline mb-6">
-        Offers
+        {params.categoryName == "rent" ? 'Places for rent' : 'places for sale'}
       </h1>
       {listings && listings.length > 0 && (
         <div className="m-2 mb-6">

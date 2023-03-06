@@ -13,6 +13,7 @@ import PrivateRouteForProfileAndListing from "./Components/PrivateRouteForProfil
 import PrivateRouteForSignIn from "./Components/PrivateRouteForSignIn";
 import EditListing from "./Pages/EditListing";
 import Listing from "./Pages/Listing";
+import Category from "./Pages/Category";
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
             <Route path="/edit-listing/:id" element={<EditListing />} />
           </Route>
           <Route path="/category/:categoryName/:listingId" element={<Listing />} />
+          <Route path="/category/:categoryName" element={<Category />} />
         </Routes>
       </Router>
       {/* TO GENERATE TOAST */}
